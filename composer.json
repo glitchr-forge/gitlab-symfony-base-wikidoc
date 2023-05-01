@@ -1,5 +1,5 @@
 {
-    "name": "glitchr/wikidoc",
+    "name": "glitchr/wikidoc-bundle",
     "type": "symfony-bundle",
     "description": "",
     "keywords": ["symfony"],
