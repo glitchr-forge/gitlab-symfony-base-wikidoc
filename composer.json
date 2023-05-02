@@ -27,6 +27,7 @@
         "symfony/dependency-injection": "^6.0",
         "symfony/http-kernel": "^6.0",
         "symfony/filesystem": "^6.0",
+        "glitchr/base-bundle": "2.0.*-dev"
         "git/git-bundle": "1.0.*-dev"
     },
     "require-dev": {
