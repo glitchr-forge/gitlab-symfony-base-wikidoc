@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Wikidoc\DependencyInjection;
+namespace Base\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -10,7 +10,7 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 /**
  *
  */
-class Configuration implements ConfigurationInterface
+class WikidocConfiguration implements ConfigurationInterface
 {
     /**
      * @inheritdoc

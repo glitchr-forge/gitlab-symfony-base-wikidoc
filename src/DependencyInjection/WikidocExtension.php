@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Wikidoc\DependencyInjection;
+namespace Base\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -22,7 +22,7 @@ class WikidocExtension extends Extension
         $loader->load('services.xml');
 
         $processor = new Processor();
-        $configuration = new Configuration();
+        $configuration = new WikidocConfiguration();
         $config = $processor->processConfiguration($configuration, $configs);
         $this->setConfiguration($container, $config, $configuration->getTreeBuilder()->getRootNode()->getNode()->getName());
     }

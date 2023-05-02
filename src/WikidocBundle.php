@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Wikidoc;
+namespace Base;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

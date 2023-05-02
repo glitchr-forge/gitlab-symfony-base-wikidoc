@@ -13,12 +13,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Base\\Wikidoc\\": "."
+            "Base\\": "./src",
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Base\\Wikidoc\\": "./Tests"
+            "Tests\\Base\\": "./src/Tests"
         }
     },
     "require": {
