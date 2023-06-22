@@ -3,37 +3,19 @@
 namespace Base\Wikidoc\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Base\Bundle\AbstractBaseConfiguration;
 
 /**
  *
  */
-class WikidocConfiguration implements ConfigurationInterface
+class WikidocConfiguration extends AbstractBaseConfiguration
 {
     /**
      * @inheritdoc
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $this->treeBuilder = new TreeBuilder('wikidoc');
-
-        $rootNode = $this->treeBuilder->getRootNode();
-        $this->addGlobalOptionsSection($rootNode);
-
-        return $this->treeBuilder;
-    }
-
-    private TreeBuilder $treeBuilder;
-
-    public function getTreeBuilder(): TreeBuilder
-    {
-        return $this->treeBuilder;
-    }
-
-    private function addGlobalOptionsSection(ArrayNodeDefinition $rootNode)
-    {
-        $rootNode;
+        return $this->getTreeBuilder();
     }
 }

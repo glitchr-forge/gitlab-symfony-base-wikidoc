@@ -7,8 +7,6 @@ use Base\Database\Annotation\Cache;
 use Base\Database\Annotation\DiscriminatorEntry;
 use Base\Wikidoc\Repository\TagRepository;
 use Base\Service\Model\IconizeInterface;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**

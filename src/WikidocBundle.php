@@ -2,11 +2,11 @@
 
 namespace Base\Wikidoc;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Base\Bundle\AbstractBaseBundle;
 
 /**
  *
  */
-class WikidocBundle extends Bundle
-{
+class WikidocBundle extends AbstractBaseBundle
+{   
 }

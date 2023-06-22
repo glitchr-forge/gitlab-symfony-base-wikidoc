@@ -7,13 +7,13 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\Definition\Processor;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use function dirname;
+
+use Base\Bundle\AbstractBaseExtension;
 
 /**
  *
  */
-class WikidocExtension extends Extension
+class WikidocExtension extends AbstractBaseExtension
 {
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -25,26 +25,7 @@ class WikidocExtension extends Extension
         $configuration = new WikidocConfiguration();
         $config = $processor->processConfiguration($configuration, $configs);
         $this->setConfiguration($container, $config, $configuration->getTreeBuilder()->getRootNode()->getNode()->getName());
-    }
 
-    /**
-     * @param ContainerBuilder $container
-     * @param array $config
-     * @param $globalKey
-     * @return void
-     */
-    public function setConfiguration(ContainerBuilder $container, array $config, $globalKey = "")
-    {
-        foreach ($config as $key => $value) {
-            if (!empty($globalKey)) {
-                $key = $globalKey . "." . $key;
-            }
-
-            if (is_array($value)) {
-                $this->setConfiguration($container, $value, $key);
-            } else {
-                $container->setParameter($key, $value);
-            }
-        }
+        $this->setConfigurationAliases($container);
     }
 }
