@@ -1,0 +1,36 @@
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{% extends "@EasyAdmin/menu.html.twig" %}
+
+{% macro render_manual_section(section, selected_document, documentList, class = "") %}
+
+    {% if section != null or is_granted("ROLE_SUPERADMIN") %}
+    <li class="menu-header {{ class }}">{{ section ? section.label : "@controllers.backoffice_manual.no_section"|trans }}</li>
+    {% for document in documentList %}
+        <li class="menu-item  {{ class }} {{ selected_document == document ? "active" }}">{{ document|urlify(null, {"class": "menu-item-contents"}) }}</li>
+    {% endfor %}
+    {% endif %}
+
+{% endmacro %}
+
+{% block main_menu_before %}{% endblock %}
+
+{% block main_menu %}
+
+<nav id="main-menu">
+    <ul class="menu">
+    {% for sectionId, documentList in documents %} 
+        {% set section = sections[sectionId] ?? null %}
+        {% if section is not null %}
+            {{ _self.render_manual_section(section, selected_document, documentList) }}
+        {% endif %}
+    {% endfor %}
+
+    {% set section = sections[0] ?? null %}
+    {% set documentList = documents[0] ?? null %}
+    {{ _self.render_manual_section(section, selected_document, documentList, "menu-without-section") }}
+    
+    </ul>
+</nav>
+
+{% endblock %}
+

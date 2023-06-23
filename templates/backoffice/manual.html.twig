@@ -1,0 +1,21 @@
+{% extends "@EasyAdmin/layout.html.twig" %}
+
+{% block content_icon  %}{{ "backoffice_manual"|iconify|closest(1)|raw }}{% endblock %}
+{% block content_title %}{{ title("backoffice_manual") }}{% endblock %}
+{% block content_excerpt  %}{{ excerpt("backoffice_manual") }}{% endblock %}
+
+{% block main_menu_wrapper %}
+    {{ include("@Wikidoc/backoffice/manual_menu.html.twig") }}
+{% endblock main_menu_wrapper %}
+
+{% block content %}
+{% if selected_document is defined and selected_document is not null %}
+    <div class="text-right">{{selected_document|crudify}}</div>
+    <div class="text-center">{{selected_document.content|wysiwyg|raw}}</div>
+{% else %}
+    <div class="text-center">
+    {{"@controllers.backoffice_manual.empty"|trans}}
+    </div>
+{% endif %}
+
+{% endblock %}

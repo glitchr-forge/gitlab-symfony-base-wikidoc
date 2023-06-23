@@ -2,3 +2,6 @@ wikidoc:
   document:
     _singular: "document"
     _plural: "documents"
+  section: 
+    _singular: "section"
+    _plural: "sections"  

@@ -7,5 +7,6 @@
 
         <defaults public="false" />
         <service id="Base\Wikidoc\Controller\Backend\Crud\DocumentCrudController" parent="Base\Controller\Backend\AbstractCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
+        <service id="Base\Wikidoc\Controller\Backend\Crud\SectionCrudController" parent="Base\Controller\Backend\Crud\Thread\TagCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
     </services>
 </container>

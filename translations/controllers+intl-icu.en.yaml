@@ -1,0 +1,7 @@
+backoffice_manual:
+  title: "Manual"
+  excerpt: "User documentation page"
+  empty: "No documentation available"
+  no_section: "Unsorted documents"
+  
+  
