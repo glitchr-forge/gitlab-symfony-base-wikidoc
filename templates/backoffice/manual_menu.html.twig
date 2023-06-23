@@ -27,8 +27,9 @@
 
     {% set section = sections[0] ?? null %}
     {% set documentList = documents[0] ?? null %}
-    {{ _self.render_manual_section(section, selected_document, documentList, "menu-without-section") }}
-    
+    {% documentList is not null and documentList|length > 0 %}
+        {{ _self.render_manual_section(section, selected_document, documentList, "menu-without-section") }}
+    {% endif %}    
     </ul>
 </nav>
 
