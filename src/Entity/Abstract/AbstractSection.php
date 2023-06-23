@@ -1,26 +1,23 @@
 <?php
 
-namespace Base\Wikidoc\Entity;
+namespace Base\Wikidoc\Entity\Abstract;
 
 use Base\Annotations\Annotation\Hierarchify;
 use Base\Database\Annotation\Cache;
-use Base\Database\Annotation\DiscriminatorEntry;
-use Base\Wikidoc\Repository\SectionRepository;
+use Base\Wikidoc\Repository\AbstractSectionRepository;
 use Base\Service\Model\IconizeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Base\Database\Annotation\ColumnAlias;
 
 /**
- * @ORM\Entity(repositoryClass=SectionRepository::class)
+ * @ORM\Entity(repositoryClass=AbstractSectionRepository::class)
  *
  * @Cache(usage="NONSTRICT_READ_WRITE", associations="ALL")
  *
- * @DiscriminatorEntry( value = "wikidoc_section" )
- *
  * @Hierarchify(hierarchy = {"wikidoc", "sections"}, separator = "/" );
  */
-class Section extends \Base\Entity\Thread\Tag implements IconizeInterface
+abstract class AbstractSection extends \Base\Entity\Thread\Tag implements IconizeInterface
 {
     /**
      * @ColumnAlias(column = "threads")
@@ -33,19 +30,19 @@ class Section extends \Base\Entity\Thread\Tag implements IconizeInterface
     }
 
     /**
-     * @param Document $document
+     * @param AbstractDocument $document
      * @return Section
      */
-    public function addDocument(Document $document)
+    public function addDocument(AbstractDocument $document)
     {
         return $this->addThread($document);
     }
 
     /**
-     * @param Document $document
+     * @param AbstractDocument $document
      * @return Section
      */
-    public function removeDocument(Document $document)
+    public function removeDocument(AbstractDocument $document)
     {
         return $this->removeThread($document);
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Base\Wikidoc\Controller\Backend\Crud;
+namespace Base\Wikidoc\Controller\Backend\Crud\Abstract;
 
 use Base\Controller\Backend\AbstractCrudController;
 use Base\Field\DiscriminatorField;
@@ -14,7 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 /**
  *
  */
-class DocumentCrudController extends AbstractCrudController
+class AbstractDocumentCrudController extends AbstractCrudController
 {
     public static function getPreferredIcon(): ?string
     {

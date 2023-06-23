@@ -1,11 +1,10 @@
 <?php
 
-namespace Base\Wikidoc\Entity;
+namespace Base\Wikidoc\Entity\Abstract;
 
-use Base\Wikidoc\Repository\DocumentRepository;
+use Base\Wikidoc\Repository\AbstractDocumentRepository;
 use Base\Annotations\Annotation\Hierarchify;
 use Base\Database\Annotation\Cache;
-use Base\Database\Annotation\DiscriminatorEntry;
 use Base\Entity\Thread;
 use Base\Service\Model\LinkableInterface;
 use Doctrine\Common\Collections\Collection;
@@ -14,15 +13,13 @@ use Base\Database\Annotation\ColumnAlias;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * @ORM\Entity(repositoryClass=DocumentRepository::class)
+ * @ORM\Entity(repositoryClass=AbstractDocumentRepository::class)
  *
  * @Cache(usage="NONSTRICT_READ_WRITE", associations="ALL")
  *
- * @DiscriminatorEntry( value = "wikidoc" )
- *
  * @Hierarchify(hierarchy = {"wikidoc"}, separator = "/" );
  */
-class Document extends Thread implements LinkableInterface
+abstract class AbstractDocument extends Thread implements LinkableInterface
 {
     public static function __iconizeStatic(): ?array
     {
@@ -47,12 +44,12 @@ class Document extends Thread implements LinkableInterface
         return $this->getTags();
     }
 
-    public function addSection(Section $section): self
+    public function addSection(AbstractSection $section): self
     {
         return $this->addTag($section);
     }
 
-    public function removeSection(Section $section): self
+    public function removeSection(AbstractSection $section): self
     {
         return $this->removeTag($section);
     }
