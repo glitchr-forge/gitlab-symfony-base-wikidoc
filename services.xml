@@ -6,7 +6,14 @@
     <services>
 
         <defaults public="false" />
-        <service id="Base\Wikidoc\Controller\Backend\Crud\DocumentCrudController" parent="Base\Controller\Backend\AbstractCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
-        <service id="Base\Wikidoc\Controller\Backend\Crud\SectionCrudController" parent="Base\Controller\Backend\Crud\Thread\TagCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
+        <service id="Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractDocumentCrudController" parent="Base\Controller\Backend\AbstractCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
+        <service id="Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractSectionCrudController" parent="Base\Controller\Backend\Crud\Thread\TagCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
+
+        <service id="Base\Wikidoc\Controller\Backend\Crud\AdminDocumentCrudController" parent="Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractDocumentCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
+        <service id="Base\Wikidoc\Controller\Backend\Crud\AdminSectionCrudController" parent="Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractSectionCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
+        <service id="Base\Wikidoc\Controller\Backend\Crud\UserDocumentCrudController" parent="Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractDocumentCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
+        <service id="Base\Wikidoc\Controller\Backend\Crud\UserSectionCrudController" parent="Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractSectionCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
+        <service id="Base\Wikidoc\Controller\Backend\Crud\DevDocumentCrudController" parent="Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractDocumentCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
+        <service id="Base\Wikidoc\Controller\Backend\Crud\DevSectionCrudController" parent="Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractSectionCrudController"><tag name="ea.crud_controller" /><tag name="container.service_subscriber" /></service>
     </services>
 </container>

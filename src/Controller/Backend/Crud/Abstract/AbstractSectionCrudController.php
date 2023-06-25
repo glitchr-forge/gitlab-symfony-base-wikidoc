@@ -1,10 +1,10 @@
 <?php
 
-namespace Base\Wikidoc\Controller\Backend\Crud;
+namespace Base\Wikidoc\Controller\Backend\Crud\Abstract;
 
 /**
  *
  */
-class SectionCrudController extends \Base\Controller\Backend\Crud\Thread\TagCrudController
+class AbstractSectionCrudController extends \Base\Controller\Backend\Crud\Thread\TagCrudController
 {
 }

@@ -2,7 +2,7 @@
 
 namespace Base\Wikidoc\Entity\Abstract;
 
-use Base\Wikidoc\Repository\AbstractDocumentRepository;
+use Base\Wikidoc\Repository\Abstract\AbstractDocumentRepository;
 use Base\Annotations\Annotation\Hierarchify;
 use Base\Database\Annotation\Cache;
 use Base\Entity\Thread;
@@ -10,6 +10,7 @@ use Base\Service\Model\LinkableInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Base\Database\Annotation\ColumnAlias;
+use Base\Database\Annotation\DiscriminatorEntry;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -17,6 +18,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  *
  * @Cache(usage="NONSTRICT_READ_WRITE", associations="ALL")
  *
+ * @DiscriminatorEntry()
  * @Hierarchify(hierarchy = {"wikidoc"}, separator = "/" );
  */
 abstract class AbstractDocument extends Thread implements LinkableInterface

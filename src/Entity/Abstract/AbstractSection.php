@@ -4,17 +4,19 @@ namespace Base\Wikidoc\Entity\Abstract;
 
 use Base\Annotations\Annotation\Hierarchify;
 use Base\Database\Annotation\Cache;
-use Base\Wikidoc\Repository\AbstractSectionRepository;
+use Base\Wikidoc\Repository\Abstract\AbstractSectionRepository;
 use Base\Service\Model\IconizeInterface;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Base\Database\Annotation\ColumnAlias;
+use Base\Database\Annotation\DiscriminatorEntry;
 
 /**
  * @ORM\Entity(repositoryClass=AbstractSectionRepository::class)
  *
  * @Cache(usage="NONSTRICT_READ_WRITE", associations="ALL")
  *
+ * @DiscriminatorEntry()
  * @Hierarchify(hierarchy = {"wikidoc", "sections"}, separator = "/" );
  */
 abstract class AbstractSection extends \Base\Entity\Thread\Tag implements IconizeInterface

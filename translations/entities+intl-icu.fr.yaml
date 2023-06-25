@@ -1,7 +1,27 @@
 wikidoc:
-  document:
-    _singular: "document"
-    _plural: "documents"
-  section: 
-    _singular: "section"
-    _plural: "sections"  
+  abstract:
+    abstract_document:
+      _singular: "document"
+      _plural: "documents"
+    abstract_section: 
+      _singular: "section"
+      _plural: "sections"  
+
+  admin_document:
+    _singular: "manuel administrateurs"
+    _plural: "manuels administrateurs"
+  admin_section: 
+    _singular: "section administrateurs"
+    _plural: "sections administrateurs"
+  dev_document:
+    _singular: "manuel développeurs"
+    _plural: "manuels développeurs"
+  dev_section: 
+    _singular: "section développeurs"
+    _plural: "sections développeurs"  
+  user_document:
+    _singular: "document utilisateurs"
+    _plural: "documents utilisateurs"
+  user_section: 
+    _singular: "section utilisateurs"
+    _plural: "sections utilisateurs"  
