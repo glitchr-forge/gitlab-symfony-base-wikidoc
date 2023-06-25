@@ -20,8 +20,8 @@ wikidoc:
     _singular: "developer section"
     _plural: "developer sections"  
   user_document:
-    _singular: "user document"
-    _plural: "user documents"
+    _singular: "user manual"
+    _plural: "user manuals"
   user_section: 
     _singular: "user section"
     _plural: "user sections"  
