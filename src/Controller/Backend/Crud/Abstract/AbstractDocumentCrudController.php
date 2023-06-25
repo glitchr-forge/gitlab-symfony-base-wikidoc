@@ -28,7 +28,7 @@ class AbstractDocumentCrudController extends AbstractCrudController
 
         return parent::configureFields($pageName, [
             'id' => function () {
-                yield DiscriminatorField::new()->showLeaf(false)->showIconOnly();
+                yield DiscriminatorField::new()->showLeaf(true);
                 yield TextField::new('title')->setColumns(6);
                 yield SlugField::new('slug')->setTargetFieldName("title")->setColumns(3);
                 
