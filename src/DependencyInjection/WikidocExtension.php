@@ -15,7 +15,7 @@ use Base\Bundle\AbstractBaseExtension;
  */
 class WikidocExtension extends AbstractBaseExtension
 {
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         // Format XML
         $loader = new XmlFileLoader($container, new FileLocator(dirname(__DIR__) . '/Resources/config'));
