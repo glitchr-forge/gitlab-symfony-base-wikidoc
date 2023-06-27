@@ -12,13 +12,4 @@ use Base\Wikidoc\Entity\AdminSection;
  */
 class AdminDocumentCrudController extends AbstractDocumentCrudController
 {
-    public function configureFields(string $pageName, ...$args): iterable
-    {
-        return parent::configureFields($pageName, [
-            'slug' => function () {
-                
-                yield SelectField::new('parent')->setColumns(6)->allowMultipleChoices(false)->setRequired(false)->setClass(AdminDocument::class);
-            },
-        ], $args);
-    }
 }

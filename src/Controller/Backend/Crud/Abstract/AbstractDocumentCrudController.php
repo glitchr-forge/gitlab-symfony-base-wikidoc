@@ -30,12 +30,11 @@ class AbstractDocumentCrudController extends AbstractCrudController
                 yield DiscriminatorField::new()->showLeaf(true);
                 yield TextField::new('title')->setColumns(6);
                 yield SlugField::new('slug')->setTargetFieldName("title")->setColumns(3);
-                
+
                 yield IconField::new('icon')->setColumns(3);
                 yield NumberField::new('priority')->setColumns(3);
                 yield TextareaField::new('excerpt')->setColumns(12);
                 yield EditorField::new('content')->onlyOnForms();
-                
             },
         ], $args);
     }

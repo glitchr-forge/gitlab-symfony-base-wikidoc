@@ -12,13 +12,4 @@ use Base\Wikidoc\Entity\UserSection;
  */
 class UserDocumentCrudController extends AbstractDocumentCrudController
 {
-    public function configureFields(string $pageName, ...$args): iterable
-    {
-        return parent::configureFields($pageName, [
-            'slug' => function () {
-                
-                yield SelectField::new('parent')->setColumns(6)->setRequired(false)->allowMultipleChoices(false)->setClass(UserDocument::class);
-            },
-        ], $args);
-    }
 }
