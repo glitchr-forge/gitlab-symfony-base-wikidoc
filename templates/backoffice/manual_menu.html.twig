@@ -1,39 +1,29 @@
 {# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
 {% extends "@EasyAdmin/menu.html.twig" %}
 
-{% macro render_manual_section(section, selected_document, documentList, class = "") %}
-
-    {% if section != null or is_granted("ROLE_SUPERADMIN") %}
-    <li class="menu-header menu-item {{ class }} {{ selected_document == section ? "active" }}">{{ section|urlify(null) }}</li>
-    {% for document in documentList %}
-        <li class="menu-item  {{ class }} {{ selected_document == document ? "active" }}">
-        {{ document|urlify(null, {"class": "menu-item-contents"}) }}
-        </li>
-    {% endfor %}
-    {% endif %}
-
-{% endmacro %}
-
 {% block main_menu_before %}{% endblock %}
 
 {% block main_menu %}
-
 <nav id="main-menu">
     <ul class="menu">
-    {% for sectionId, documentList in documents %} 
-        {% set section = sections[sectionId] ?? null %}
-        {% if section is not null %}
-            {{ _self.render_manual_section(section, selected_document, documentList) }}
-        {% endif %}
-    {% endfor %}
+    {% for document in documents %} 
+        
+        {% if document != null or is_granted("ROLE_SUPERADMIN") %}
+            
+            <li class="menu-header menu-item {{ selected_document == document ? "active" }}">{{ document|urlify(null) }}</li>
+            
+            {% for array in (document.content|wysiwyg_toc) %}
+                {% set title = array["title"] %}
+                {% set slug  = array["slug"]  %}
+                {% set url   = (document|linkify) ~ "#" ~ slug %}
 
-    {% set section = sections[0] ?? null %}
-    {% set documentList = documents[0] ?? null %}
-    {% if documentList is not null and documentList|length > 0 %}
-        {{ _self.render_manual_section(section, selected_document, documentList, "menu-without-section") }}
-    {% endif %}    
+                <li class="menu-item menu-without-section"><a class="menu-item-contents" href="{{url}}">{{ title }}</a></li>
+            {% endfor %}
+
+        {% endif %}
+
+    {% endfor %}
     </ul>
 </nav>
-
 {% endblock %}
 

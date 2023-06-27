@@ -12,12 +12,13 @@
 {% if selected_document is defined and selected_document is not null %}
     <div class="text-right">{{selected_document|crudify({"label": ("@controllers.backoffice_manual.last_update"|trans)~": " ~ (selected_document.updatedAt|datetime) })}}</div>
     <div>
-        <h1>{{ selected_document.title }}</h1>
+        <h1><a href="{{app.request.uri}}">{{ selected_document.title }}</a></h1>
         {% if selected_document.excerpt is not empty %}
             <p>{{ selected_document.excerpt }}</p>
             {% if selected_document.content is not empty %}<hr>{% endif %}
         {% endif %}
-        {{selected_document.content|wysiwyg|raw}}
+        
+        {{selected_document.content|wysiwyg({headings:true})|raw}}
     </div>
 {% else %}
     <div class="text-center">
