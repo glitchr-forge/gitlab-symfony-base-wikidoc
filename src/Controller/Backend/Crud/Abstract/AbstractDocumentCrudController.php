@@ -6,10 +6,9 @@ use Base\Controller\Backend\AbstractCrudController;
 use Base\Field\DiscriminatorField;
 use Base\Field\EditorField;
 use Base\Field\IconField;
-use Base\Field\SelectField;
+use Base\Field\NumberField;
 use Base\Field\SlugField;
 use Base\Field\TextField;
-use Base\Wikidoc\Entity\Abstract\AbstractSection;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 
 /**
@@ -33,8 +32,10 @@ class AbstractDocumentCrudController extends AbstractCrudController
                 yield SlugField::new('slug')->setTargetFieldName("title")->setColumns(3);
                 
                 yield IconField::new('icon')->setColumns(3);
+                yield NumberField::new('priority')->setColumns(3);
                 yield TextareaField::new('excerpt')->setColumns(12);
                 yield EditorField::new('content')->onlyOnForms();
+                
             },
         ], $args);
     }

@@ -3,5 +3,4 @@ backoffice_manual:
   excerpt: "User documentation page"
   empty: "No documentation available"
   no_section: "Unsorted documents"
-  
-  
+  last_update: "Last update"

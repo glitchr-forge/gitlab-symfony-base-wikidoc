@@ -4,9 +4,11 @@
 {% macro render_manual_section(section, selected_document, documentList, class = "") %}
 
     {% if section != null or is_granted("ROLE_SUPERADMIN") %}
-    <li class="menu-header {{ class }}">{{ section ? section.label : "@controllers.backoffice_manual.no_section"|trans }}</li>
+    <li class="menu-header menu-item {{ class }} {{ selected_document == section ? "active" }}">{{ section|urlify(null) }}</li>
     {% for document in documentList %}
-        <li class="menu-item  {{ class }} {{ selected_document == document ? "active" }}">{{ document|urlify(null, {"class": "menu-item-contents"}) }}</li>
+        <li class="menu-item  {{ class }} {{ selected_document == document ? "active" }}">
+        {{ document|urlify(null, {"class": "menu-item-contents"}) }}
+        </li>
     {% endfor %}
     {% endif %}
 

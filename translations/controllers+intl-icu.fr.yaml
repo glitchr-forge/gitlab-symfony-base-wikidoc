@@ -3,4 +3,4 @@ backoffice_manual:
   excerpt: "Documentation utilisateur pour la configuration du site"
   empty: "Aucun manuel trouvé"
   no_section: "Non-référencés"
-  
+  last_update: "Dernière mise à jour"

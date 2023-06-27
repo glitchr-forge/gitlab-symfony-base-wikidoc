@@ -7,9 +7,7 @@ use Base\Annotations\Annotation\Hierarchify;
 use Base\Database\Annotation\Cache;
 use Base\Entity\Thread;
 use Base\Service\Model\LinkableInterface;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Base\Database\Annotation\ColumnAlias;
 use Base\Database\Annotation\DiscriminatorEntry;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -37,26 +35,6 @@ abstract class AbstractDocument extends Thread implements LinkableInterface
     }
 
     /**
-     * @ColumnAlias(column = "tags")
-     */
-    protected $sections;
-
-    public function getSections(): Collection
-    {
-        return $this->getTags();
-    }
-
-    public function addSection(AbstractSection $section): self
-    {
-        return $this->addTag($section);
-    }
-
-    public function removeSection(AbstractSection $section): self
-    {
-        return $this->removeTag($section);
-    }
-
-    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $icon;
@@ -73,6 +51,22 @@ abstract class AbstractDocument extends Thread implements LinkableInterface
     public function setIcon(?string $icon): static
     {
         $this->icon = $icon;
+        return $this;
+    }
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $priority;
+
+    public function getPriority(): ?int
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(?int $priority): self
+    {
+        $this->priority = $priority;
         return $this;
     }
 }
