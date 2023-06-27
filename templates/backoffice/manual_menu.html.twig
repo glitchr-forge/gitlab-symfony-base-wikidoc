@@ -10,14 +10,24 @@
         
         {% if document != null or is_granted("ROLE_SUPERADMIN") %}
             
-            <li class="menu-header menu-item {{ selected_document == document ? "active" }}">{{ document|urlify(null) }}</li>
+            <li class="menu-header menu-item {{ selected_document == document ? "active" }}">
+                {{ document|iconify|first|raw }}                      
+                {{ document|urlify(null) }}
+            </li>
             
             {% for array in (document.content|wysiwyg_toc) %}
                 {% set title = array["title"] %}
                 {% set slug  = array["slug"]  %}
                 {% set url   = (document|linkify) ~ "#" ~ slug %}
 
-                <li class="menu-item menu-without-section"><a class="menu-item-contents" href="{{url}}">{{loop.index}}/ {{ title }}</a></li>
+            <li class="menu-item {{ selected_document == document ? "active" }}">
+                <a href="{{ url }}" class="menu-item-contents " rel="noopener" referrerpolicy="origin-when-cross-origin">
+                    <span class="menu-item-label position-relative">
+                        <i class="fa-fw fa-solid"></i>{{loop.index}}. {{ title }}
+                    </span>
+                </a>
+            </li>
+
             {% endfor %}
 
         {% endif %}
