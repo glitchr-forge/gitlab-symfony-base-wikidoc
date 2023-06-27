@@ -15,9 +15,9 @@
         <h1><a href="{{app.request.uri}}">{{ selected_document.title }}</a></h1>
         {% if selected_document.excerpt is not empty %}
             <p>{{ selected_document.excerpt }}</p>
-            {% if selected_document.content is not empty %}<hr>{% endif %}
         {% endif %}
         
+	<hr>
         {{selected_document.content|wysiwyg({headings:true})|raw}}
     </div>
 {% else %}
