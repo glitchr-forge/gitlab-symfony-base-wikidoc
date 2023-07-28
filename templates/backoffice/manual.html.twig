@@ -20,6 +20,19 @@
 	<hr>
         {{selected_document.content|wysiwyg({headings:true})|raw}}
     </div>
+
+    {# 
+    {% if previous_document is not null %}
+    <div class="text-left">{{ previous_document.title }}</div>
+    {% endif %}
+
+    {% if next_document is not null %}
+    <div class="text-right">
+        {{ next_document.title }}
+    </div>
+    {% endif %}
+    #}
+    
 {% else %}
     <div class="text-center">
     {{"@controllers.backoffice_manual.empty"|trans}}
