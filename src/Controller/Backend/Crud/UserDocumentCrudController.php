@@ -7,9 +7,6 @@ use Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractDocumentCrudController
 use Base\Wikidoc\Entity\UserDocument;
 use Base\Wikidoc\Entity\UserSection;
 
-/**
- *
- */
 class UserDocumentCrudController extends AbstractDocumentCrudController
 {
     public function configureFields(string $pageName, ...$args): iterable

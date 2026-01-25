@@ -7,9 +7,6 @@ use Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractDocumentCrudController
 use Base\Wikidoc\Entity\DevDocument;
 use Base\Wikidoc\Entity\DevSection;
 
-/**
- *
- */
 class DevDocumentCrudController extends AbstractDocumentCrudController
 {
     public function configureFields(string $pageName, ...$args): iterable

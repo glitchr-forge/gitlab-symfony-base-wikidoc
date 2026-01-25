@@ -11,9 +11,6 @@ use Base\Field\SlugField;
 use Base\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 
-/**
- *
- */
 class AbstractDocumentCrudController extends AbstractCrudController
 {
     public static function getPreferredIcon(): ?string

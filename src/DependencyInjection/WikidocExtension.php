@@ -10,9 +10,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 use Base\Bundle\AbstractBaseExtension;
 
-/**
- *
- */
 class WikidocExtension extends AbstractBaseExtension
 {
     public function load(array $configs, ContainerBuilder $container): void
