@@ -1,8 +1,8 @@
 {
-    "name": "glitchr/well-known",
+    "name": "glitchr/base-bundle-wikidoc",
     "type": "symfony-bundle",
-    "description": ".well-known directory integration for Symfony",
-    "keywords": ["symfony", "ux", "crisp"],
+    "description": "Wikidoc integration for Symfony",
+    "keywords": ["symfony", "ux", "wikidoc"],
     "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
