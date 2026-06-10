@@ -3,7 +3,7 @@
 namespace Base\Wikidoc\Repository\Abstract;
 
 use Base\Wikidoc\Entity\Abstract\AbstractDocument;
-use Base\Annotations\Traits\HierarchifyTrait;
+use Base\Attributes\Traits\HierarchifyTrait;
 
 use Base\Database\Repository\ServiceEntityRepository;
 

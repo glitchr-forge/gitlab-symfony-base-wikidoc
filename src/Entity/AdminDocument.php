@@ -3,11 +3,11 @@
 namespace Base\Wikidoc\Entity;
 
 use Base\Wikidoc\Repository\AdminDocumentRepository;
-use Base\Annotations\Annotation\Hierarchify;
-use Base\Database\Annotation\Cache;
+use Base\Attributes\Attribute\Hierarchify;
+use Base\Database\Attribute\Cache;
 use Base\Wikidoc\Entity\Abstract\AbstractDocument;
 use Doctrine\ORM\Mapping as ORM;
-use Base\Database\Annotation\DiscriminatorEntry;
+use Base\Database\Attribute\DiscriminatorEntry;
 
 /**
  * @ORM\Entity(repositoryClass=AdminDocumentRepository::class)

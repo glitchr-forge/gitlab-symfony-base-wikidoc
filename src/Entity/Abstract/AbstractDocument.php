@@ -3,12 +3,12 @@
 namespace Base\Wikidoc\Entity\Abstract;
 
 use Base\Wikidoc\Repository\Abstract\AbstractDocumentRepository;
-use Base\Annotations\Annotation\Hierarchify;
-use Base\Database\Annotation\Cache;
+use Base\Attributes\Attribute\Hierarchify;
+use Base\Database\Attribute\Cache;
 use Base\Entity\Thread;
 use Base\Service\Model\LinkableInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Base\Database\Annotation\DiscriminatorEntry;
+use Base\Database\Attribute\DiscriminatorEntry;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
