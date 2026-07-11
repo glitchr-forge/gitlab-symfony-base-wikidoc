@@ -1,28 +1,30 @@
-{% extends "@EasyAdmin/layout.html.twig" %}
+{% extends '@Admin/layout.html.twig' %}
 
-{% block content_icon  %}{{ "backoffice_manual"|iconify|closest(1)|raw }}{% endblock %}
-{% block content_title %}{{ title("backoffice_manual") }}{% endblock %}
-{% block content_excerpt  %}{{ excerpt("backoffice_manual") }}{% endblock %}
+{% block page_title %}{{ selected_document ? selected_document.title : 'manual.title'|trans({}, 'admin') }}{% endblock %}
 
-{% block main_menu_wrapper %}
-    {{ include("@Wikidoc/backoffice/manual_menu.html.twig") }}
-{% endblock main_menu_wrapper %}
+{% block main_menu %}
+    {{ parent() }}
+    {{ include('@Wikidoc/backoffice/manual_menu.html.twig') }}
+{% endblock %}
+
+{% block content_header %}
+<div class="admin-header">
+    <h1>{{ 'manual.title'|trans({}, 'admin') }}</h1>
+</div>
+{% endblock %}
 
 {% block content %}
-{% if selected_document is defined and selected_document is not null %}
-    <div class="text-right">{{selected_document|crudify({"label": ("@controllers.backoffice_manual.last_update"|trans)~": " ~ (selected_document.updatedAt|datetime) })}}</div>
-    <div>
+<div class="card manual-content">
+    {% if selected_document is not null %}
+        <div class="manual-meta">{{ 'manual.last_update'|trans({}, 'admin') }}: {{ selected_document.updatedAt|date('Y-m-d H:i') }}</div>
         <h1>{{ selected_document.title }}</h1>
         {% if selected_document.excerpt is not empty %}
-            <p>{{ selected_document.excerpt }}</p>
+            <p class="manual-excerpt">{{ selected_document.excerpt }}</p>
             {% if selected_document.content is not empty %}<hr>{% endif %}
         {% endif %}
-        {{selected_document.content|wysiwyg|raw}}
-    </div>
-{% else %}
-    <div class="text-center">
-    {{"@controllers.backoffice_manual.empty"|trans}}
-    </div>
-{% endif %}
-
+        {{ selected_document.content|wysiwyg|raw }}
+    {% else %}
+        <div class="empty-state">{{ 'manual.empty'|trans({}, 'admin') }}</div>
+    {% endif %}
+</div>
 {% endblock %}

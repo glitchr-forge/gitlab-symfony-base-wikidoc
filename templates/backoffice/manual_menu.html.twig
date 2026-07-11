@@ -1,39 +1,22 @@
-{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
-{% extends "@EasyAdmin/menu.html.twig" %}
-
-{% macro render_manual_section(section, selected_document, documentList, class = "") %}
-
-    {% if section != null or is_granted("ROLE_SUPERADMIN") %}
-    <li class="menu-header menu-item {{ class }} {{ selected_document == section ? "active" }}">{{ section|urlify(null) }}</li>
-    {% for document in documentList %}
-        <li class="menu-item  {{ class }} {{ selected_document == document ? "active" }}">
-        {{ document|urlify(null, {"class": "menu-item-contents"}) }}
-        </li>
-    {% endfor %}
-    {% endif %}
-
+{% macro render_nodes(nodes, selected_document) %}
+    {% import _self as self %}
+    <ul class="manual-tree">
+        {% for node in nodes %}
+            {% set document = node.document %}
+            <li class="{{ selected_document and selected_document.id == document.id ? 'selected' }}">
+                <a href="{{ path('backoffice_manual', {slug: document.slug}) }}">{{ document.title }}</a>
+                {% if node.children is not empty %}
+                    {{ self.render_nodes(node.children, selected_document) }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
 {% endmacro %}
 
-{% block main_menu_before %}{% endblock %}
-
-{% block main_menu %}
-
-<nav id="main-menu">
-    <ul class="menu">
-    {% for sectionId, documentList in documents %} 
-        {% set section = sections[sectionId] ?? null %}
-        {% if section is not null %}
-            {{ _self.render_manual_section(section, selected_document, documentList) }}
-        {% endif %}
-    {% endfor %}
-
-    {% set section = sections[0] ?? null %}
-    {% set documentList = documents[0] ?? null %}
-    {% if documentList is not null and documentList|length > 0 %}
-        {{ _self.render_manual_section(section, selected_document, documentList, "menu-without-section") }}
-    {% endif %}    
-    </ul>
-</nav>
-
-{% endblock %}
-
+{% import _self as self %}
+{% if documents is not empty %}
+    <div class="manual-menu-section">
+        <div class="section">{{ 'manual.title'|trans({}, 'admin') }}</div>
+        {{ self.render_nodes(documents, selected_document) }}
+    </div>
+{% endif %}

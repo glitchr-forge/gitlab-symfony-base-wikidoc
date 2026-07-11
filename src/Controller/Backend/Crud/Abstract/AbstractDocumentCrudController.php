@@ -2,38 +2,31 @@
 
 namespace Base\Wikidoc\Controller\Backend\Crud\Abstract;
 
-use Base\Controller\Backend\AbstractCrudController;
-use Base\Field\DiscriminatorField;
-use Base\Field\EditorField;
-use Base\Field\IconField;
-use Base\Field\NumberField;
-use Base\Field\SlugField;
-use Base\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use Base\Admin\Controller\AbstractCrudController;
+use Base\Admin\Field\DiscriminatorField;
+use Base\Admin\Field\EditorField;
+use Base\Admin\Field\IconField;
+use Base\Admin\Field\NumberField;
+use Base\Admin\Field\SlugField;
+use Base\Admin\Field\TextareaField;
+use Base\Admin\Field\TextField;
 
 class AbstractDocumentCrudController extends AbstractCrudController
 {
     public static function getPreferredIcon(): ?string
     {
-        return null;
+        return 'fa-solid fa-book';
     }
 
-    public function configureFields(string $pageName, ...$args): iterable
+    public function configureFields(string $pageName): iterable
     {
-        $this->hideId();
+        yield DiscriminatorField::new()->showLeaf(true);
+        yield TextField::new('title')->setColumns(6);
+        yield SlugField::new('slug')->setTargetFieldName('title')->setColumns(3);
 
-        return parent::configureFields($pageName, [
-            'id' => function () {
-                yield DiscriminatorField::new()->showLeaf(true);
-                yield TextField::new('title')->setColumns(6);
-                yield SlugField::new('slug')->setTargetFieldName("title")->setColumns(3);
-                
-                yield IconField::new('icon')->setColumns(3);
-                yield NumberField::new('priority')->setColumns(3);
-                yield TextareaField::new('excerpt')->setColumns(12);
-                yield EditorField::new('content')->onlyOnForms();
-                
-            },
-        ], $args);
+        yield IconField::new('icon')->setColumns(3);
+        yield NumberField::new('priority')->setColumns(3);
+        yield TextareaField::new('excerpt')->setColumns(12);
+        yield EditorField::new('content')->onlyOnForms();
     }
 }

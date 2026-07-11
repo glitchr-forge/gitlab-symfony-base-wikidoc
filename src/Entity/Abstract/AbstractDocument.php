@@ -3,7 +3,7 @@
 namespace Base\Wikidoc\Entity\Abstract;
 
 use Base\Wikidoc\Repository\Abstract\AbstractDocumentRepository;
-use Base\Attributes\Attribute\Hierarchify;
+use Base\Database\Attribute\Hierarchify;
 use Base\Database\Attribute\Cache;
 use Base\Entity\Thread;
 use Base\Service\Model\LinkableInterface;
@@ -11,14 +11,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Base\Database\Attribute\DiscriminatorEntry;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-/**
- * @ORM\Entity(repositoryClass=AbstractDocumentRepository::class)
- *
- * @Cache(usage="NONSTRICT_READ_WRITE", associations="ALL")
- *
- * @DiscriminatorEntry()
- * @Hierarchify(hierarchy = {"wikidoc"}, separator = "/" );
- */
+#[ORM\Entity(repositoryClass: AbstractDocumentRepository::class)]
+#[Cache(usage: 'NONSTRICT_READ_WRITE', associations: 'ALL')]
+#[DiscriminatorEntry]
+#[Hierarchify(['wikidoc'], separator: '/')]
 abstract class AbstractDocument extends Thread implements LinkableInterface
 {
     public static function __iconizeStatic(): ?array
@@ -34,9 +30,7 @@ abstract class AbstractDocument extends Thread implements LinkableInterface
         return $this->getRouter()->generate($routeName, $routeParameters, $referenceType);
     }
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected $icon;
 
     public function getIcon(): ?string
@@ -54,9 +48,7 @@ abstract class AbstractDocument extends Thread implements LinkableInterface
         return $this;
     }
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     protected $priority;
 
     public function getPriority(): ?int

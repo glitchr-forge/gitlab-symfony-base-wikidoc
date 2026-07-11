@@ -2,20 +2,20 @@
 
 namespace Base\Wikidoc\Controller\Backend\Crud;
 
-use Base\Field\SelectField;
+use Base\Admin\Field\SelectField;
 use Base\Wikidoc\Controller\Backend\Crud\Abstract\AbstractDocumentCrudController;
 use Base\Wikidoc\Entity\DevDocument;
-use Base\Wikidoc\Entity\DevSection;
 
 class DevDocumentCrudController extends AbstractDocumentCrudController
 {
-    public function configureFields(string $pageName, ...$args): iterable
+    public static function getEntityFqcn(): string
     {
-        return parent::configureFields($pageName, [
-            'slug' => function () {
-                
-                yield SelectField::new('parent')->setColumns(6)->setRequired(false)->allowMultipleChoices(false)->setClass(DevDocument::class);
-            },
-        ], $args);
+        return DevDocument::class;
+    }
+
+    public function configureFields(string $pageName): iterable
+    {
+        yield from parent::configureFields($pageName);
+        yield SelectField::new('parent')->setColumns(6)->setRequired(false)->allowMultipleChoices(false)->setClass(DevDocument::class);
     }
 }
