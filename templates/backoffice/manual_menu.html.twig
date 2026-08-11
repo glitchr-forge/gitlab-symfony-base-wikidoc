@@ -1,12 +1,25 @@
-{% macro render_nodes(nodes, selected_document) %}
+{# The manual's own navigation, injected into the admin sidebar below the
+   main menu. Styled with the admin's OWN tokens (--admin-*) rather than the
+   classes this partial used to carry: those were EasyAdmin-era and the new
+   admin ships no Bootstrap, so they resolved to nothing and the tree
+   rendered as unstyled flush-left text under the nav. #}
+{% macro nodes(pages, current, depth) %}
     {% import _self as self %}
-    <ul class="manual-tree">
-        {% for node in nodes %}
-            {% set document = node.document %}
-            <li class="{{ selected_document and selected_document.id == document.id ? 'selected' }}">
-                <a href="{{ path('backoffice_manual', {slug: document.slug}) }}">{{ document.title }}</a>
-                {% if node.children is not empty %}
-                    {{ self.render_nodes(node.children, selected_document) }}
+    <ul class="doc-tree{{ depth == 0 ? ' doc-tree-root' }}">
+        {% for page in pages %}
+            {% set active = current and current.path == page.path %}
+            {% set open = page.contains(current ? current.path : null) %}
+            <li class="doc-tree-item{{ active ? ' is-active' }}{{ open ? ' is-open' }}">
+                {% if page.isSection %}
+                    <span class="doc-tree-section">{{ page.title }}</span>
+                {% else %}
+                    <a class="doc-tree-link" href="{{ path('backoffice_manual', {path: page.path}) }}">
+                        {{ page.title }}
+                        {%- if page.isOverride %}<i class="doc-tree-override fa-solid fa-code-branch" title="{{ 'manual.overrides'|trans({}, 'admin') }}"></i>{% endif -%}
+                    </a>
+                {% endif %}
+                {% if page.children is not empty %}
+                    {{ self.nodes(page.children, current, depth + 1) }}
                 {% endif %}
             </li>
         {% endfor %}
@@ -14,9 +27,9 @@
 {% endmacro %}
 
 {% import _self as self %}
-{% if documents is not empty %}
-    <div class="manual-menu-section">
-        <div class="section">{{ 'manual.title'|trans({}, 'admin') }}</div>
-        {{ self.render_nodes(documents, selected_document) }}
+{% if tree is not empty %}
+    <div class="doc-nav">
+        <div class="doc-nav-title">{{ 'manual.title'|trans({}, 'admin') }}</div>
+        {{ self.nodes(tree, page is defined ? page : null, 0) }}
     </div>
 {% endif %}

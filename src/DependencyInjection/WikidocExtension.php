@@ -9,35 +9,13 @@ use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 use Base\Bundle\AbstractBaseExtension;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Base\Wikidoc\Documentation\DocumentationRegistry;
 
-class WikidocExtension extends AbstractBaseExtension implements PrependExtensionInterface
+class WikidocExtension extends AbstractBaseExtension
 {
     public function getConfiguration(array $config, ContainerBuilder $container): WikidocConfiguration
     {
         return new WikidocConfiguration();
-    }
-
-    /**
-     * The package's own Doctrine ORM mapping: AdminDocument/DevDocument/
-     * UserDocument have no App\Entity counterpart to ride the alias trick
-     * base-bundle's own entities use, so they need a real mapping entry.
-     */
-    public function prepend(ContainerBuilder $container): void
-    {
-        $container->prependExtensionConfig('doctrine', [
-            'orm' => [
-                'mappings' => [
-                    'Wikidoc' => [
-                        'is_bundle' => false,
-                        'type' => 'attribute',
-                        'dir' => \dirname(__DIR__) . '/Entity',
-                        'prefix' => 'Base\\Wikidoc\\Entity',
-                        'alias' => 'Wikidoc',
-                    ],
-                ],
-            ],
-        ]);
     }
 
     public function load(array $configs, ContainerBuilder $container): void
@@ -51,9 +29,32 @@ class WikidocExtension extends AbstractBaseExtension implements PrependExtension
         $processor = new Processor();
         $configuration = new WikidocConfiguration();
         $config = $processor->processConfiguration($configuration, $configs);
-        $this->setConfiguration($container, $config, $configuration->getTreeBuilder()->buildTree()->getName());
 
-        // NB: no setConfigurationAliases() - that segment-swap aliasing
-        // duplicates every service definition (see base-bundle-admin).
+        // Injected straight into the service: setConfiguration() below
+        // recurses into every array it meets, so the roots MAP (whose keys
+        // are root names and whose values are arrays) would be flattened
+        // into wikidoc.roots.app.path-style scalar parameters instead of one
+        // array argument. Pulled out before that runs.
+        $roots = $config['roots'] ?? [];
+        unset($config['roots']);
+
+        // %kernel.project_dir% and friends are resolved here rather than
+        // left for the service to interpret - a root is a plain path by the
+        // time the registry sees it.
+        foreach ($roots as $name => $root) {
+            $roots[$name] = [
+                'path' => $container->resolveEnvPlaceholders($this->resolveParameters($container, (string) $root['path']), true),
+                'label' => $root['label'] ?? ucfirst((string) $name),
+            ];
+        }
+
+        $container->getDefinition(DocumentationRegistry::class)->setArgument('$roots', $roots);
+
+        $this->setConfiguration($container, $config, $configuration->getTreeBuilder()->buildTree()->getName());
+    }
+
+    protected function resolveParameters(ContainerBuilder $container, string $value): string
+    {
+        return (string) $container->getParameterBag()->resolveValue($value);
     }
 }

@@ -1,6 +1,12 @@
 {% extends '@Admin/layout.html.twig' %}
 
-{% block page_title %}{{ selected_document ? selected_document.title : 'manual.title'|trans({}, 'admin') }}{% endblock %}
+{% block page_title %}{{ page ? page.title : 'manual.title'|trans({}, 'admin') }}{% endblock %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    {# After the admin's own sheet, so the tokens it defines are in scope. #}
+    <link rel="stylesheet" href="{{ asset('bundles/wikidoc/css/wikidoc.css') }}">
+{% endblock %}
 
 {% block main_menu %}
     {{ parent() }}
@@ -9,22 +15,217 @@
 
 {% block content_header %}
 <div class="admin-header">
-    <h1>{{ 'manual.title'|trans({}, 'admin') }}</h1>
+    <span class="admin-header-icon"><i class="fa-solid fa-book"></i></span>
+    <div class="admin-header-titles">
+        <h1 class="admin-header-record">{{ page ? page.title : 'manual.title'|trans({}, 'admin') }}</h1>
+        <div class="admin-header-subtitle">
+            {{ 'manual.title'|trans({}, 'admin') }}
+            {%- if page and page.isOverride %} · <span class="doc-badge">{{ 'manual.overrides'|trans({}, 'admin') }}</span>{% endif -%}
+        </div>
+    </div>
+    <div class="global-actions">
+        {# The palette is the primary way around a manual - give it a real
+           button too, so it is discoverable without knowing the shortcut. #}
+        <button type="button" class="btn" data-doc-search-open>
+            <i class="fa-solid fa-magnifying-glass"></i> {{ 'manual.search'|trans({}, 'admin') }}
+            <kbd class="doc-kbd">⌘K</kbd>
+        </button>
+    </div>
 </div>
 {% endblock %}
 
 {% block content %}
-<div class="card manual-content">
-    {% if selected_document is not null %}
-        <div class="manual-meta">{{ 'manual.last_update'|trans({}, 'admin') }}: {{ selected_document.updatedAt|date('Y-m-d H:i') }}</div>
-        <h1>{{ selected_document.title }}</h1>
-        {% if selected_document.excerpt is not empty %}
-            <p class="manual-excerpt">{{ selected_document.excerpt }}</p>
-            {% if selected_document.content is not empty %}<hr>{% endif %}
+<div class="doc-layout">
+    <article class="card doc-content">
+        {% if page and content is not null %}
+            {{ content|raw }}
+        {% else %}
+            <div class="empty-state">{{ 'manual.empty'|trans({}, 'admin') }}</div>
         {% endif %}
-        {{ selected_document.content|wysiwyg|raw }}
-    {% else %}
-        <div class="empty-state">{{ 'manual.empty'|trans({}, 'admin') }}</div>
+    </article>
+
+    {# "On this page" rail - only worth the column when there is more than
+       one heading to jump between. #}
+    {% if headings|length > 1 %}
+        <aside class="doc-aside">
+            <div class="doc-aside-title">{{ 'manual.on_this_page'|trans({}, 'admin') }}</div>
+            <ul class="doc-onthispage">
+                {% for heading in headings %}
+                    <li class="doc-h{{ heading.level }}"><a href="#{{ heading.id }}">{{ heading.text }}</a></li>
+                {% endfor %}
+            </ul>
+        </aside>
     {% endif %}
 </div>
+
+{# ---- ⌘K palette -------------------------------------------------------
+   Homemade on purpose: the index is a flat JSON list of page- and
+   heading-level records, matched in the browser. No search service, no
+   external library, and it works offline once the page is open. #}
+<div class="doc-palette" data-doc-palette hidden>
+    <div class="doc-palette-backdrop" data-doc-palette-close></div>
+    <div class="doc-palette-panel" role="dialog" aria-modal="true" aria-label="{{ 'manual.search'|trans({}, 'admin') }}">
+        <div class="doc-palette-field">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" autocomplete="off" spellcheck="false"
+                   placeholder="{{ 'manual.search_placeholder'|trans({}, 'admin') }}" data-doc-palette-input>
+            <kbd class="doc-kbd">esc</kbd>
+        </div>
+        <div class="doc-palette-results" data-doc-palette-results></div>
+        <div class="doc-palette-footer">
+            <span><kbd class="doc-kbd">↑</kbd><kbd class="doc-kbd">↓</kbd> {{ 'manual.nav_hint'|trans({}, 'admin') }}</span>
+            <span><kbd class="doc-kbd">↵</kbd> {{ 'manual.open_hint'|trans({}, 'admin') }}</span>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var INDEX_URL = {{ path('backoffice_manual_search')|json_encode|raw }};
+    var PAGE_URL  = {{ path('backoffice_manual', {path: '__PATH__'})|json_encode|raw }};
+
+    var palette = document.querySelector('[data-doc-palette]');
+    if (!palette) return;
+
+    var input   = palette.querySelector('[data-doc-palette-input]');
+    var results = palette.querySelector('[data-doc-palette-results]');
+    var records = null, active = 0, rendered = [];
+
+    function urlFor(rec) {
+        return PAGE_URL.replace('__PATH__', rec.path.split('/').map(encodeURIComponent).join('/'))
+             + (rec.anchor ? '#' + rec.anchor : '');
+    }
+
+    // Fetched on first open, not on page load: the manual is mostly read,
+    // not searched, and this keeps the index off the critical path.
+    function load() {
+        if (records) return Promise.resolve(records);
+        return fetch(INDEX_URL, {credentials: 'same-origin'})
+            .then(function (r) { return r.ok ? r.json() : []; })
+            .then(function (data) { return (records = data); })
+            .catch(function () { return (records = []); });
+    }
+
+    // All query terms must appear somewhere, so adding a word narrows
+    // rather than widens. Score favours a title hit over a heading hit over
+    // body text, and a whole-word hit over a mid-word one.
+    function score(rec, terms) {
+        var title = rec.title.toLowerCase();
+        var section = (rec.section || '').toLowerCase();
+        var text = (rec.text || '').toLowerCase();
+        var total = 0;
+
+        for (var i = 0; i < terms.length; i++) {
+            var t = terms[i], s = 0;
+            if (title.indexOf(t) === 0) s = 100;
+            else if (title.indexOf(t) > -1) s = 60;
+            if (section.indexOf(t) === 0) s = Math.max(s, 80);
+            else if (section.indexOf(t) > -1) s = Math.max(s, 45);
+            if (text.indexOf(t) > -1) s = Math.max(s, 12);
+            if (!s) return 0;
+            total += s;
+        }
+        // A page-level record outranks its own headings for the same score,
+        // so "the page itself" is offered before a section inside it.
+        return total + (rec.section ? 0 : 3);
+    }
+
+    function snippet(rec, terms) {
+        var text = rec.text || '';
+        if (!text) return '';
+        var lower = text.toLowerCase(), at = -1;
+        for (var i = 0; i < terms.length && at < 0; i++) at = lower.indexOf(terms[i]);
+        var start = Math.max(0, at - 40);
+        return (start > 0 ? '…' : '') + text.substr(start, 140) + (text.length > start + 140 ? '…' : '');
+    }
+
+    function highlight(str, terms) {
+        var out = String(str).replace(/[&<>"]/g, function (c) {
+            return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c];
+        });
+        terms.forEach(function (t) {
+            if (!t) return;
+            out = out.replace(new RegExp('(' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig'), '<mark>$1</mark>');
+        });
+        return out;
+    }
+
+    function render(query) {
+        var terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+        rendered = [];
+
+        if (terms.length && records) {
+            rendered = records
+                .map(function (rec) { return {rec: rec, s: score(rec, terms)}; })
+                .filter(function (r) { return r.s > 0; })
+                .sort(function (a, b) { return b.s - a.s; })
+                .slice(0, 25)
+                .map(function (r) { return r.rec; });
+        }
+
+        active = 0;
+        if (!terms.length) { results.innerHTML = ''; return; }
+
+        if (!rendered.length) {
+            results.innerHTML = '<div class="doc-palette-empty">{{ 'manual.no_results'|trans({}, 'admin')|e('js') }}</div>';
+            return;
+        }
+
+        results.innerHTML = rendered.map(function (rec, i) {
+            return '<a class="doc-palette-hit' + (i === 0 ? ' is-active' : '') + '" href="' + urlFor(rec) + '" data-i="' + i + '">'
+                 + '<span class="doc-palette-hit-title">' + highlight(rec.section || rec.title, terms) + '</span>'
+                 + (rec.section ? '<span class="doc-palette-hit-parent">' + highlight(rec.title, terms) + '</span>' : '')
+                 + '<span class="doc-palette-hit-text">' + highlight(snippet(rec, terms), terms) + '</span>'
+                 + '</a>';
+        }).join('');
+    }
+
+    function move(delta) {
+        var hits = results.querySelectorAll('.doc-palette-hit');
+        if (!hits.length) return;
+        hits[active] && hits[active].classList.remove('is-active');
+        active = (active + delta + hits.length) % hits.length;
+        hits[active].classList.add('is-active');
+        hits[active].scrollIntoView({block: 'nearest'});
+    }
+
+    function open() {
+        palette.hidden = false;
+        load().then(function () { render(input.value); });
+        input.focus();
+        input.select();
+    }
+
+    function close() {
+        palette.hidden = true;
+        input.blur();
+    }
+
+    input.addEventListener('input', function () { render(input.value); });
+
+    palette.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+        else if (e.key === 'Enter') {
+            var hit = results.querySelectorAll('.doc-palette-hit')[active];
+            if (hit) { e.preventDefault(); window.location.href = hit.getAttribute('href'); }
+        } else if (e.key === 'Escape') { e.preventDefault(); close(); }
+    });
+
+    Array.prototype.forEach.call(palette.querySelectorAll('[data-doc-palette-close]'), function (el) {
+        el.addEventListener('click', close);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-doc-search-open]'), function (el) {
+        el.addEventListener('click', function (e) { e.preventDefault(); open(); });
+    });
+
+    // Ctrl+K as well as ⌘K: the admin is used from Linux and Windows too,
+    // and "/" is the other convention people reach for.
+    document.addEventListener('keydown', function (e) {
+        if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); open(); }
+        else if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)
+                 && !document.activeElement.isContentEditable) { e.preventDefault(); open(); }
+    });
+})();
+</script>
 {% endblock %}

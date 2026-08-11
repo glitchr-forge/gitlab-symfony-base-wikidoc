@@ -4,64 +4,69 @@ namespace Base\Wikidoc\Controller\Backend;
 
 use Base\Admin\Context\AdminContext;
 use Base\Admin\Menu\MenuBuilder;
-use Base\Wikidoc\Entity\UserDocument;
-use Base\Wikidoc\Repository\UserDocumentRepository;
+use Base\Wikidoc\Documentation\DocumentationRegistry;
+use Base\Wikidoc\Documentation\MarkdownRenderer;
+use Base\Wikidoc\Documentation\SearchIndexBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * The customer-facing help panel: the whole reason wikidoc exists. A flat
- * priority-ordered, self-nesting list of UserDocument entries with the
- * selected one's content rendered inline - deliberately simple, no
- * separate "section" concept (the entity model is just parent/child).
+ * The manual, rendered from markdown on disk.
+ *
+ * There is no database behind this any more: the pages are files in the
+ * documentation roots (base-bundle's own manual, then the application's,
+ * which overrides it), so they are versioned with the code they describe
+ * and reviewed in the same diff.
  */
 class ManualController extends AbstractController
 {
     public function __construct(
         protected readonly AdminContext $adminContext,
         protected readonly MenuBuilder $menuBuilder,
+        protected readonly DocumentationRegistry $registry,
+        protected readonly MarkdownRenderer $renderer,
+        protected readonly SearchIndexBuilder $searchIndex,
     ) {
     }
 
-    #[Route(['fr' => '/manuel/{slug}', 'en' => '/manual/{slug}'], name: 'backoffice_manual', defaults: ['slug' => null])]
-    public function index(?string $slug, UserDocumentRepository $repository): Response
+    /**
+     * Declared BEFORE index() below: "/manuel/{path}" has a `.+` requirement
+     * so it can match nested paths, which means it would happily swallow
+     * "_search" as a page path if it were registered first.
+     */
+    #[Route(['fr' => '/manuel/_search', 'en' => '/manual/_search'], name: 'backoffice_manual_search', methods: ['GET'], priority: 10)]
+    public function search(): JsonResponse
     {
-        $documents = $repository->findBy([], ['priority' => 'ASC']);
-        $selected = $slug ? $repository->findOneBy(['slug' => $slug]) : null;
+        // Same firewall as the manual itself - the index is a flattened copy
+        // of the documentation, so it must not be reachable by anyone who
+        // could not already read the pages.
+        return new JsonResponse($this->searchIndex->build());
+    }
+
+    #[Route(['fr' => '/manuel/{path}', 'en' => '/manual/{path}'], name: 'backoffice_manual', defaults: ['path' => null], requirements: ['path' => '.+'])]
+    public function index(?string $path): Response
+    {
+        $page = null !== $path ? $this->registry->get($path) : $this->registry->getDefault();
+
+        if (null !== $path && null === $page) {
+            throw $this->createNotFoundException(sprintf('No documentation page at "%s".', $path));
+        }
 
         if ([] === $this->adminContext->getMainMenu()) {
             $this->adminContext->setMainMenu($this->menuBuilder->buildDefault());
         }
 
+        $markdown = null !== $page?->file ? (string) @file_get_contents($page->file) : null;
+
         return $this->render('@Wikidoc/backoffice/manual.html.twig', [
             'admin_context' => $this->adminContext,
-            'documents' => $this->buildTree($documents),
-            'selected_document' => $selected,
+            'tree' => $this->registry->getTree(),
+            'page' => $page,
+            'content' => null !== $markdown ? $this->renderer->render($markdown) : null,
+            'headings' => null !== $markdown ? $this->renderer->extractHeadings($markdown) : [],
+            'roots' => $this->registry->getRoots(),
         ]);
-    }
-
-    /**
-     * @param UserDocument[] $documents
-     * @return array<int, array{document: UserDocument, children: array}>
-     */
-    protected function buildTree(array $documents): array
-    {
-        $byParent = [];
-        foreach ($documents as $document) {
-            $parentId = $document->getParent()?->getId() ?? 0;
-            $byParent[$parentId][] = $document;
-        }
-
-        $build = function (int $parentId) use (&$build, $byParent): array {
-            $nodes = [];
-            foreach ($byParent[$parentId] ?? [] as $document) {
-                $nodes[] = ['document' => $document, 'children' => $build($document->getId())];
-            }
-
-            return $nodes;
-        };
-
-        return $build(0);
     }
 }
