@@ -6,12 +6,24 @@
  * unstyled text - which is exactly how this bundle's previous sidebar
  * partial broke. Tokens only. */
 
-/* ---- sidebar tree ---------------------------------------------------- */
+/* ---- floating rail --------------------------------------------------- */
 
-.doc-nav { padding: .35rem .75rem 1rem; }
-.doc-nav-title {
+/* The manual's own navigation, deliberately NOT in the admin sidebar: two
+ * hierarchies stacked in one column read as one confusing menu. Sticky so
+ * it follows a long page, and it scrolls internally rather than pushing the
+ * viewport when the manual grows. */
+.doc-rail {
+    flex: 0 0 250px; position: sticky; top: 5rem;
+    display: flex; flex-direction: column; gap: .75rem;
+    max-height: calc(100vh - 6.5rem); overflow-y: auto;
+}
+.doc-rail-card {
+    background: var(--admin-surface); border: 1px solid var(--admin-border);
+    border-radius: 10px; padding: .6rem .5rem;
+}
+.doc-rail-title {
     font-size: .68rem; letter-spacing: .08em; text-transform: uppercase;
-    color: var(--admin-muted); padding: .5rem .5rem .35rem;
+    color: var(--admin-muted); padding: .15rem .5rem .4rem;
 }
 .doc-tree { list-style: none; margin: 0; padding: 0; }
 /* Nested levels indent and gain a rule, so depth is readable at a glance
@@ -26,9 +38,11 @@
     font-size: .85rem; line-height: 1.3;
     color: inherit; text-decoration: none;
 }
-.doc-tree-link:hover { background: var(--admin-surface); text-decoration: none; }
+/* --admin-bg, not --admin-surface: inside the rail card the surface colour
+   IS the background, so hovering would show no change at all. */
+.doc-tree-link:hover { background: var(--admin-bg); text-decoration: none; }
 .doc-tree-item.is-active > .doc-tree-link {
-    background: var(--admin-surface);
+    background: var(--admin-bg);
     color: var(--admin-accent);
     font-weight: 600;
 }
@@ -43,15 +57,7 @@
 .doc-layout { display: flex; align-items: flex-start; gap: 1.25rem; }
 .doc-content { flex: 1 1 auto; min-width: 0; padding: 1.5rem 1.75rem; }
 
-.doc-aside {
-    flex: 0 0 200px; position: sticky; top: 5rem;
-    font-size: .8rem; padding: .25rem 0;
-}
-.doc-aside-title {
-    font-size: .68rem; letter-spacing: .08em; text-transform: uppercase;
-    color: var(--admin-muted); margin-bottom: .4rem;
-}
-.doc-onthispage { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--admin-border); }
+.doc-onthispage { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--admin-border); font-size: .8rem; }
 .doc-onthispage li { margin: 0; }
 .doc-onthispage a {
     display: block; padding: .2rem .6rem; color: var(--admin-muted); text-decoration: none;
@@ -61,7 +67,13 @@
 .doc-onthispage .doc-h3 a { padding-left: 1.2rem; }
 .doc-onthispage .doc-h4 a { padding-left: 1.8rem; font-size: .95em; }
 
-@media (max-width: 1100px) { .doc-aside { display: none; } }
+/* Below this the rail would squeeze the prose column; it moves above the
+   content instead of disappearing, because it is the page NAVIGATION now -
+   hiding it would strand the reader on whatever page they are on. */
+@media (max-width: 1100px) {
+    .doc-layout { flex-direction: column-reverse; }
+    .doc-rail { flex: 1 1 auto; position: static; max-height: none; width: 100%; }
+}
 
 /* ---- rendered markdown ----------------------------------------------- */
 

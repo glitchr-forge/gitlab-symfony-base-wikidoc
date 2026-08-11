@@ -119,8 +119,12 @@ class MarkdownRenderer
     public function extractText(string $markdown): string
     {
         $text = preg_replace('/^---\R.*?^---\R/ms', '', $markdown) ?? $markdown;   // front matter
-        $text = preg_replace('/```.*?```/s', ' ', $text) ?? $text;                  // fenced code
-        $text = preg_replace('/`[^`]*`/', ' ', $text) ?? $text;                     // inline code
+        // Code is KEPT, only its fences removed. In technical documentation
+        // the code spans hold exactly what people search for - a path, a
+        // command, a class name - so dropping them made the index miss the
+        // most specific query anyone would type ("src", "make deploy").
+        $text = preg_replace('/```[a-z0-9]*\R?(.*?)```/s', '$1 ', $text) ?? $text;  // fenced code
+        $text = preg_replace('/`([^`]*)`/', '$1', $text) ?? $text;                  // inline code
         $text = preg_replace('/!\[[^\]]*\]\([^)]*\)/', ' ', $text) ?? $text;        // images
         $text = preg_replace('/\[([^\]]*)\]\([^)]*\)/', '$1', $text) ?? $text;      // links -> label
         $text = preg_replace('/^\s{0,3}#{1,6}\s+/m', '', $text) ?? $text;           // heading marks

@@ -28,8 +28,8 @@
 
 {% import _self as self %}
 {% if tree is not empty %}
-    <div class="doc-nav">
-        <div class="doc-nav-title">{{ 'manual.title'|trans({}, 'admin') }}</div>
+    <nav class="doc-rail-card doc-nav" aria-label="{{ 'manual.title'|trans({}, 'admin') }}">
+        <div class="doc-rail-title">{{ 'manual.title'|trans({}, 'admin') }}</div>
         {{ self.nodes(tree, page is defined ? page : null, 0) }}
-    </div>
+    </nav>
 {% endif %}

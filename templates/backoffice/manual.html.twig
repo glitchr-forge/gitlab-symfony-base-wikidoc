@@ -8,10 +8,11 @@
     <link rel="stylesheet" href="{{ asset('bundles/wikidoc/css/wikidoc.css') }}">
 {% endblock %}
 
-{% block main_menu %}
-    {{ parent() }}
-    {{ include('@Wikidoc/backoffice/manual_menu.html.twig') }}
-{% endblock %}
+{# The page tree deliberately does NOT extend the admin sidebar. It used to,
+   and it read as a second unlabelled menu grafted under the real navigation
+   — two competing hierarchies in one column. It belongs to the document
+   being read, not to the admin, so it lives in the manual's own floating
+   rail beside the content (see .doc-rail). #}
 
 {% block content_header %}
 <div class="admin-header">
@@ -44,18 +45,25 @@
         {% endif %}
     </article>
 
-    {# "On this page" rail - only worth the column when there is more than
-       one heading to jump between. #}
-    {% if headings|length > 1 %}
-        <aside class="doc-aside">
-            <div class="doc-aside-title">{{ 'manual.on_this_page'|trans({}, 'admin') }}</div>
-            <ul class="doc-onthispage">
-                {% for heading in headings %}
-                    <li class="doc-h{{ heading.level }}"><a href="#{{ heading.id }}">{{ heading.text }}</a></li>
-                {% endfor %}
-            </ul>
-        </aside>
-    {% endif %}
+    {# Floating rail: the manual's own navigation, kept out of the admin
+       sidebar. The page tree first (where am I in the manual), then the
+       current page's headings (where am I in this page). #}
+    <aside class="doc-rail">
+        {{ include('@Wikidoc/backoffice/manual_menu.html.twig') }}
+
+        {# Only worth the space when there is more than one heading to jump
+           between - a single-heading list is just the title repeated. #}
+        {% if headings|length > 1 %}
+            <div class="doc-rail-card">
+                <div class="doc-rail-title">{{ 'manual.on_this_page'|trans({}, 'admin') }}</div>
+                <ul class="doc-onthispage">
+                    {% for heading in headings %}
+                        <li class="doc-h{{ heading.level }}"><a href="#{{ heading.id }}">{{ heading.text }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </aside>
 </div>
 
 {# ---- ⌘K palette -------------------------------------------------------

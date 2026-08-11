@@ -36,7 +36,7 @@ class ManualController extends AbstractController
      * so it can match nested paths, which means it would happily swallow
      * "_search" as a page path if it were registered first.
      */
-    #[Route(['fr' => '/manuel/_search', 'en' => '/manual/_search'], name: 'backoffice_manual_search', methods: ['GET'], priority: 10)]
+    #[Route('/docs/_search', name: 'backoffice_manual_search', methods: ['GET'], priority: 10)]
     public function search(): JsonResponse
     {
         // Same firewall as the manual itself - the index is a flattened copy
@@ -45,7 +45,13 @@ class ManualController extends AbstractController
         return new JsonResponse($this->searchIndex->build());
     }
 
-    #[Route(['fr' => '/manuel/{path}', 'en' => '/manual/{path}'], name: 'backoffice_manual', defaults: ['path' => null], requirements: ['path' => '.+'])]
+    /**
+     * One path for every locale, deliberately: "docs" reads the same in
+     * French and English, and a documentation URL is the kind of thing that
+     * gets pasted into a ticket or a commit message, where a locale-specific
+     * variant only creates two spellings of the same page.
+     */
+    #[Route('/docs/{path}', name: 'backoffice_manual', defaults: ['path' => null], requirements: ['path' => '.+'])]
     public function index(?string $path): Response
     {
         $page = null !== $path ? $this->registry->get($path) : $this->registry->getDefault();
@@ -62,6 +68,12 @@ class ManualController extends AbstractController
 
         return $this->render('@Wikidoc/backoffice/manual.html.twig', [
             'admin_context' => $this->adminContext,
+            // Same flag AbstractDashboardController passes. Without it the
+            // layout's customize affordances render inert here and the
+            // topbar toggle appears to do nothing - reported live: the
+            // manual is an admin page like any other, so the toggle has to
+            // behave like it does everywhere else.
+            'customize_enabled' => $this->isGranted(\Base\Enum\UserRole::SUPERADMIN),
             'tree' => $this->registry->getTree(),
             'page' => $page,
             'content' => null !== $markdown ? $this->renderer->render($markdown) : null,
