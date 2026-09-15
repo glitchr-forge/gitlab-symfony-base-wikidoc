@@ -18,14 +18,13 @@ ifneq ($(strip $(APP_DEBUG_BAK)),)
 endif
 export APP_ENV APP_DEBUG
 
+# Nothing to build yet: assets/package.json declares no scripts, so the
+# inherited `yarn run watch` / `yarn run prod` failed with "command not found"
+# whenever the application's `make build-vendor glitchr/base-bundle-wikidoc`
+# called this target. Say so and succeed; give package.json a `prod` script and
+# restore a build here when the bundle gets compiled assets.
 assets:
-ifeq ($(APP_DEBUG),1)
-	@cd assets && yarn install
-	@cd assets && yarn run watch
-else
-	@cd assets && yarn install
-	@cd assets && yarn run prod
-endif
+	@echo "No assets to build for this bundle (assets/package.json has no scripts)."
 
 deploy:
 	@composer update
