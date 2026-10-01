@@ -1,5 +1,5 @@
 {
-    "name": "glitchr/base-bundle-wikidoc",
+    "name": "@omnibase/docs",
     "type": "symfony-bundle",
     "description": "Wikidoc integration for Symfony",
     "keywords": ["symfony", "ux", "wikidoc"],

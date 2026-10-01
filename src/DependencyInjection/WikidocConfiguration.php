@@ -36,7 +36,7 @@ class WikidocConfiguration extends AbstractBaseConfiguration
                 //
                 //     wikidoc:
                 //         roots:
-                //             base: { path: '%kernel.project_dir%/vendor/glitchr/base-bundle/docs', label: 'Base' }
+                //             base: { path: '%kernel.project_dir%/vendor/glitchr/omnibase/docs', label: 'Base' }
                 //             app:  { path: '%kernel.project_dir%/docs', label: 'Application' }
                 //
                 // A root that does not exist on disk is skipped, so shipping
